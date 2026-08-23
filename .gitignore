@@ -74,6 +74,8 @@ Thumbs.db
 
 # Raw data directory — contains multi-gigabyte .mat files, never tracked
 data/
+# ...but preserve the directory structure with .gitkeep placeholders
+!data/**/.gitkeep
 
 # Regeneratable classification result plots (CSVs are tracked, PNGs are not)
 bip/classification_artifacts/*.png
