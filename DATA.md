@@ -2,7 +2,7 @@
 
 This directory contains raw battery cycling datasets used by the Battery Intelligence Platform.
 
-## ⚠️ Datasets are NOT included in this repository (too large for Git)
+## Datasets are NOT included in this repository (too large for Git)
 
 You must download and place the following files manually:
 
