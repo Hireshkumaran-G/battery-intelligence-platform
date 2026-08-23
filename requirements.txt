@@ -1,0 +1,19 @@
+# Core Platform Dependencies
+numpy
+scipy
+pandas
+matplotlib
+scikit-learn
+PyYAML
+scikit-image
+h5py
+tqdm
+seaborn
+
+# Development / Testing Dependencies (Optional)
+pytest
+pytest-cov
+black
+isort
+mypy
+flake8

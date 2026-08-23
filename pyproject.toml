@@ -1,0 +1,54 @@
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "--strict-markers" # Removed --strict-paths for testing
+testpaths = [
+    "tests",
+]
+pythonpath = [
+    "."
+]
+markers = [
+    "unit: marks tests as unit tests",
+    "integration: marks tests as integration tests",
+]
+
+[tool.isort]
+profile = "black"
+line_length = 100
+multi_line_output = 3
+
+[tool.black]
+line-length = 100
+target-version = ['py38']
+
+[project]
+name = "bip"
+version = "0.1.0"
+description = "Battery Intelligence Platform (BIP) - Embedded Intelligence Framework"
+readme = "README.md"
+authors = [
+    { name = "Hireshkumaran G", email = "hiresh046@gmail.com" }, 
+]
+license = { file = "LICENSE" }
+requires-python = ">=3.8"
+dependencies = [
+    "numpy",
+    "scipy",
+    "scikit-learn",
+    "PyYAML",
+    "scikit-image",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-cov",
+    "black",
+    "isort",
+    "mypy",
+    "flake8",
+]
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta" # This is the CORRECT location for this line

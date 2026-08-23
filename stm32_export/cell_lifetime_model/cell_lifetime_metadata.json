@@ -1,0 +1,6 @@
+{
+  "feature_count": 9,
+  "model_type": "DecisionTreeClassifier",
+  "sampling_rate_hz": 1000.0,
+  "target_mcu": "STM32F446RE"
+}

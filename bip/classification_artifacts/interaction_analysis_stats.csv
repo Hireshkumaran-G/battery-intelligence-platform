@@ -1,0 +1,4 @@
+model,formula,r2,aic,f_stat_vs_prev,p_value_vs_prev
+Model 1 (Simple),soh ~ ripple_norm_deg2,0.3161,-30786.6,,
+Model 2 (Additive),soh ~ ripple_norm_deg2 + C(chem),0.6226,-36560.5,3945.050044509463,0.0
+Model 3 (Interaction),soh ~ ripple_norm_deg2 * C(chem),0.8367,-44695.7,6364.571241401462,0.0

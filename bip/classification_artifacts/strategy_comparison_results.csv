@@ -1,0 +1,6 @@
+target,chemistry,rmse_strategy_A_global,rmse_strategy_B_specific,rmse_strategy_C_calibrated,r2_strategy_A_global,r2_strategy_B_specific,r2_strategy_C_calibrated
+SOH,LFP,0.0099,0.0095,0.0286,0.8597,0.8652,-0.1036
+SOH,NMC,0.0161,0.0078,0.0614,0.9273,0.9832,0.1273
+SOH,LCO,0.0295,0.0285,0.0899,0.9025,0.9106,0.1327
+RUL,NMC,657.8,684.0,1899.4,0.8925,0.8896,0.2723
+RUL,LCO,133.6,82.5,216.2,0.0604,0.727,-0.8501

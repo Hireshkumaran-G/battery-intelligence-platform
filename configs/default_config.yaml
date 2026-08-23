@@ -1,0 +1,30 @@
+
+general:
+  project_name: "Severson Ingestion"
+
+physics:
+  ripple_decomposition_method: "polynomial_detrend"
+  detrending_order: 3
+  moving_average_window_size: 10
+  derivative_window_size: 5
+  derivative_poly_order: 3
+  snr_threshold: 10.0
+  enable_electrochemical_models: True # Enable placeholder models
+
+signal_processing:
+  savitzky_golay_window: 7
+  savitzky_golay_poly_order: 3
+  sampling_rate_hz: 1.0 # This should ideally be read from data or config for actual use
+  low_pass_cutoff_hz: 0.1 # Placeholder, actual needs to be determined based on signal content
+
+features:
+  enable_feature_selection: False
+  feature_selection_method: ""
+
+intelligence_engine:
+  model_type: "decision_tree"
+  problem_type: "classification"
+  random_state: 42
+  model_parameters:
+    max_depth: 10
+    min_samples_leaf: 5

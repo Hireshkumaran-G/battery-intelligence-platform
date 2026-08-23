@@ -1,0 +1,4 @@
+chemistry,cell_id,early_soh,late_soh,delta_ripple_rms_deg2,delta_voltage_mean,delta_voltage_std,delta_voltage_kurtosis,delta_fft_energy
+LFP,LFP_Cell_0,1.0047,0.9594,0.007445,-0.032259,0.028318,-0.397425,449.935483
+NMC,NMC_Cell_1,0.9786,0.7636,-0.013853,0.004749,-0.01273,-0.373119,-42161.189256
+LCO,LCO_B0005,0.9839,0.7051,0.007979,-0.106776,0.029043,0.130921,307.390661

@@ -1,0 +1,88 @@
+# Byte-compiled / optimized / DLL support
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Translations
+*.mo
+*.pot
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDEs and editors
+.idea/
+.vscode/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS metadata
+.DS_Store
+Thumbs.db
+
+# Project-specific ignores
+
+# Raw data directory — contains multi-gigabyte .mat files, never tracked
+data/
+
+# Regeneratable classification result plots (CSVs are tracked, PNGs are not)
+bip/classification_artifacts/*.png
+
+# Master dataset CSV — large generated file, reproducible by running build_master_dataset.py
+bip/classification_artifacts/master_chemistry_dataset.csv
+
+# Dataset store caches / local databases
+bip_data_store/
+
+# Redundant legacy STM32 generic model (replaced by per-chemistry models)
+stm32_export/soh_model/
