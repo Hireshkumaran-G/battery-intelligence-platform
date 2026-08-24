@@ -1,0 +1,155 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Light Mode Theme Tokens (Clean Engineering Workstation) */
+    --bg-root: #F1F4F8;
+    --bg-sidebar: #E5EBF2;
+    --bg-sidebar-header: #DBE3ED;
+    --bg-topbar: #FFFFFF;
+    --bg-workspace: #F8FAFD;
+    --bg-panel: #FFFFFF;
+    --bg-panel-sub: #F0F4F9;
+    --bg-control-strip: #FFFFFF;
+    --bg-card-sub: #F0F4F9;
+    --bg-tooltip: #FFFFFF;
+
+    --border-main: #CBD5E1;
+    --border-sub: #E2E8F0;
+    --border-hover: #94A3B8;
+
+    --text-primary: #0F172A;
+    --text-secondary: #334155;
+    --text-muted: #64748B;
+    --text-subtle: #94A3B8;
+
+    --chart-bg: #FFFFFF;
+    --chart-grid: #E2E8F0;
+    --chart-axis: #64748B;
+    --chart-tooltip-bg: #FFFFFF;
+    --chart-tooltip-border: #CBD5E1;
+    --chart-tooltip-text: #0F172A;
+
+    /* Semantic Accents (Light Mode) */
+    --accent-voltage: #0284C7;   /* Sky / Voltage / LFP */
+    --accent-current: #D97706;   /* Amber / Current / NMC */
+    --accent-thermal: #E11D48;   /* Rose / Thermal / LCO */
+    --accent-ripple: #0891B2;    /* Cyan / Dynamic Ripple */
+    --accent-model: #9333EA;     /* Purple / TinyML / RF */
+    --accent-healthy: #059669;   /* Emerald / Observed EOL */
+    --accent-censored: #64748B;  /* Slate / Right-Censored */
+  }
+
+  .dark {
+    /* Dark Mode Theme Tokens (Neutral Graphite Workstation) */
+    --bg-root: #07090D;
+    --bg-sidebar: #0A0D12;
+    --bg-sidebar-header: #07090D;
+    --bg-topbar: #0C1016;
+    --bg-workspace: #0E1117;
+    --bg-panel: #121720;
+    --bg-panel-sub: #090C11;
+    --bg-control-strip: #0C1016;
+    --bg-card-sub: #090C11;
+    --bg-tooltip: #090C11;
+
+    --border-main: #252B35;
+    --border-sub: #1B202A;
+    --border-hover: #373E4D;
+
+    --text-primary: #F1F5F9;
+    --text-secondary: #CBD5E1;
+    --text-muted: #94A3B8;
+    --text-subtle: #64748B;
+
+    --chart-bg: transparent;
+    --chart-grid: #1B202A;
+    --chart-axis: #94A3B8;
+    --chart-tooltip-bg: #090C11;
+    --chart-tooltip-border: #252B35;
+    --chart-tooltip-text: #F1F5F9;
+
+    /* Semantic Accents (Dark Mode) */
+    --accent-voltage: #38BDF8;   /* Sky / Voltage / LFP */
+    --accent-current: #F59E0B;   /* Amber / Current / NMC */
+    --accent-thermal: #F43F5E;   /* Rose / Thermal / LCO */
+    --accent-ripple: #22D3EE;    /* Cyan / Dynamic Ripple */
+    --accent-model: #A855F7;     /* Purple / TinyML / RF */
+    --accent-healthy: #10B981;   /* Emerald / Observed EOL */
+    --accent-censored: #64748B;  /* Slate / Right-Censored */
+  }
+
+  html {
+    scroll-behavior: smooth;
+    min-height: 100%;
+  }
+
+  body {
+    background-color: var(--bg-root);
+    color: var(--text-primary);
+    font-family: Inter, Geist, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+}
+
+/* Custom engineering workstation scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-root);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-main);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* Layered Workstation Surfaces */
+.scientific-panel {
+  background-color: var(--bg-panel);
+  border: 1px solid var(--border-main);
+  border-radius: 8px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.scientific-panel:hover {
+  border-color: var(--border-hover);
+}
+
+.scientific-panel-sub {
+  background-color: var(--bg-panel-sub);
+  border: 1px solid var(--border-sub);
+  border-radius: 6px;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+}
+
+.control-strip {
+  background-color: var(--bg-control-strip);
+  border: 1px solid var(--border-main);
+  border-radius: 8px;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.glass-header {
+  background: var(--bg-topbar);
+  border-bottom: 1px solid var(--border-main);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Micro-interaction transition helpers */
+.transition-surface {
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}

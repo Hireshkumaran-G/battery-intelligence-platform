@@ -88,3 +88,6 @@ bip_data_store/
 
 # Redundant legacy STM32 generic model (replaced by per-chemistry models)
 stm32_export/soh_model/
+
+# Node.js dependencies
+node_modules/
