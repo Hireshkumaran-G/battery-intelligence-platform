@@ -202,13 +202,13 @@ The platform architecture is a layered, decoupled system designed for clarity, e
                  +----------------------+----------------------+
                  |                                             |
                  v                                             v
-      +----------------------+                    +----------------------+
-      | Deployment Engine    |                    | Dashboard / Reports  |
-      +----------+-----------+                    +----------------------+
-                 |
-      +----------+-----------+
-      |                      |
-      v                      v
+      +----------------------+                    +-----------------------------+
+      | Deployment Engine    |                    | Research Dashboard Layer    |
+      +----------+-----------+                    | bip_api  (FastAPI REST)     |
+                 |                                | dashboard (Vite + React 18) |
+      +----------+-----------+                    | ECharts • TanStack Query    |
+      |                      |                    | Zustand • TypeScript        |
+      v                      v                    +-----------------------------+
 +--------------+     +----------------------+
 | emlearn      |     | TensorFlow Lite Micro|
 +------+-------+     +----------+-----------+
@@ -230,21 +230,52 @@ The platform architecture is a layered, decoupled system designed for clarity, e
 ```text
 battery-intelligence-platform/
 ├── README.md                      # Platform overview & research findings
-├── requirements.txt               # Declared package dependencies
+├── requirements.txt               # Python dependencies (ML stack + API server)
 ├── pyproject.toml                 # Build system & package metadata configuration
 ├── setup.py                       # Package discovery & installations
 ├── LICENSE                        # Proprietary Copyright & IP protection notice
+│
 ├── bip/                           # Core Python library & modules
 │   ├── config.py                  # YAML configuration manager
 │   ├── physics.py                 # Polynomial detrending & electrochemical physics engine
 │   ├── signal.py                  # Filtering & spectral analysis
-│   ├── features.py               # Feature extraction & importance ablation
-│   ├── models.py                 # Random Forest, SVR, and TinyML intelligence pipelines
-│   ├── validation.py             # GroupKFold & LOCO cross-validation framework
-│   ├── store.py                  # Dataset artifact management
-│   ├── deploy.py                 # STM32 C-header export generator
-│   ├── classification_artifacts/ # Master CSVs & benchmark results
-│   └── docs/image/               # Publication-ready figures and visual artifacts
+│   ├── features.py                # Feature extraction & importance ablation
+│   ├── models.py                  # Random Forest, SVR, and TinyML intelligence pipelines
+│   ├── validation.py              # GroupKFold & LOCO cross-validation framework
+│   ├── store.py                   # Dataset artifact management
+│   ├── deploy.py                  # STM32 C-header export generator
+│   ├── classification_artifacts/  # Master CSVs & benchmark results (11 artifacts)
+│   └── docs/image/                # Publication-ready figures and visual artifacts
+│
+├── bip_api/                       # FastAPI REST backend for the research dashboard
+│   ├── main.py                    # FastAPI app entry point (CORS, router registration)
+│   ├── config.py                  # Paths & allowed CORS origins
+│   ├── routers/                   # API route handlers
+│   │   ├── overview.py            # /api/v1/overview/* — health check & platform summary
+│   │   ├── artifacts.py           # /api/v1/artifacts/* — CSV artifact endpoints
+│   │   └── deployment.py          # /api/v1/deployment/* — STM32 model registry
+│   ├── schemas/                   # Pydantic v2 request/response models
+│   └── services/                  # Business logic layer
+│       ├── artifact_service.py    # CSV loader with in-process cache (11 artifacts)
+│       └── deployment_service.py  # STM32 export directory reader
+│
+├── dashboard/                     # Vite + React 18 + TypeScript research dashboard
+│   ├── index.html                 # App shell
+│   ├── package.json               # Node dependencies (ECharts, TanStack Query, Zustand)
+│   ├── vite.config.ts             # Vite build config (API proxy)
+│   ├── tailwind.config.js         # Tailwind theme (chemistry color tokens)
+│   └── src/
+│       ├── App.tsx                # Root component (QueryClientProvider + AppLayout)
+│       ├── index.css              # Design system — light/dark CSS variable tokens
+│       ├── api/                   # Typed fetch clients (artifacts, overview)
+│       ├── features/overview/     # 13 research feature sections & workbenches
+│       ├── components/
+│       │   ├── layout/            # AppLayout, Sidebar, Topbar, GlobalAnalysisHeader
+│       │   ├── charts/            # ECharts wrappers (heatmaps, bar charts)
+│       │   └── common/            # ScientificTable, StatusBadge
+│       ├── store/                 # Zustand global state (filters, dark mode)
+│       └── types/                 # TypeScript interfaces matching API schemas
+│
 ├── scripts/                       # Executable analysis & validation scripts
 │   ├── ingest_severson_data.py    # Raw data loader/parser for Severson LFP dataset
 │   ├── build_master_dataset.py    # Multi-chemistry dataset compiler with RUL censoring
@@ -260,7 +291,9 @@ battery-intelligence-platform/
 │   ├── run_cell_lifetime_classification.py # Embedded classifier trainer
 │   ├── export_all_chemistry_models.py # SOH model TinyML exporter for all chemistries
 │   └── ...                        # Diagnostic & helper script utilities
+│
 ├── configs/                       # Experiment configuration YAMLs
+├── data/                          # Dataset directory (see DATA.md for download instructions)
 └── stm32_export/                  # Generated C/C++ inference models for STM32
     ├── cell_lifetime_model/       # LFP cycle life classifier C code
     ├── lfp_soh_model/             # LFP SOH regressor C code
@@ -278,17 +311,23 @@ battery-intelligence-platform/
    cd battery-intelligence-platform
    ```
 
-2. **Install Dependencies**:
+2. **Install Python Dependencies**:
    ```bash
    pip install -r requirements.txt
    ```
+   > Installs the full ML stack (numpy, scipy, scikit-learn, …) plus the API server (FastAPI, Uvicorn, Pydantic).
 
-3. **Re-compile Master Dataset**:
+3. **Download Datasets** (see `DATA.md` for full instructions):
+   ```bash
+   # Follow DATA.md to place Severson (LFP), Oxford (NMC), and NASA Ames (LCO) datasets under data/
+   ```
+
+4. **Re-compile Master Dataset**:
    ```bash
    python scripts/build_master_dataset.py
    ```
 
-4. **Run Cross-Chemistry Studies**:
+5. **Run Cross-Chemistry Studies**:
    ```bash
    # Run correlation audit
    python scripts/audit_cell_correlations.py
@@ -307,11 +346,27 @@ battery-intelligence-platform/
    python scripts/run_sensitivity_study.py
    ```
 
-5. **Deploy Models to STM32 Target**:
+6. **Deploy Models to STM32 Target**:
    ```bash
    # Export all chemistry SOH models to stm32_export/
    python scripts/export_all_chemistry_models.py
    ```
+
+7. **Launch the Research Dashboard**:
+
+   Start the FastAPI backend (serves artifact CSVs and deployment registry):
+   ```bash
+   uvicorn bip_api.main:app --reload --host 0.0.0.0 --port 8000
+   ```
+   Interactive API docs available at `http://localhost:8000/docs`.
+
+   In a separate terminal, start the Vite frontend:
+   ```bash
+   cd dashboard
+   npm install
+   npm run dev
+   ```
+   Dashboard available at `http://localhost:5173`.
 
 ---
 

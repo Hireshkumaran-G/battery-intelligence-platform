@@ -1,8 +1,11 @@
 import json
+import logging
 from pathlib import Path
 from typing import List
 from bip_api.config import STM32_EXPORT_DIR
 from bip_api.schemas.deployment import DeployedModelInfo, DeploymentSummaryResponse
+
+logger = logging.getLogger(__name__)
 
 MODEL_METADATA_MAP = {
     "cell_lifetime_model": {
@@ -50,8 +53,8 @@ class DeploymentService:
                             feature_count = meta_data.get("feature_count", feature_count)
                             sampling_rate = meta_data.get("sampling_rate_hz", sampling_rate)
                             target_mcu = meta_data.get("target_mcu", target_mcu)
-                        except Exception:
-                            pass
+                        except Exception as exc:
+                            logger.warning("Failed to parse metadata JSON '%s': %s", meta_files[0], exc)
 
                     models.append(
                         DeployedModelInfo(

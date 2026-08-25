@@ -159,7 +159,7 @@ async def get_overview_summary():
     ]
 
     return OverviewSummaryResponse(
-        total_cells=len(cell_correlations) // 6 if cell_correlations else 20,
+        total_cells=len(set(r.cell_id for r in cell_correlations)) if cell_correlations else 20,
         chemistries=["LFP", "NMC", "LCO"],
         chemistry_counts={"LFP": 8, "NMC": 8, "LCO": 4},
         datasets=datasets,

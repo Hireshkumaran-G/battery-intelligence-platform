@@ -20,10 +20,10 @@ import { ModelStrategyBenchmark } from './ModelStrategyBenchmark';
 import { CellAnalysisInspector } from './CellAnalysisInspector';
 import { CompactArtifactExplorer } from './CompactArtifactExplorer';
 import { CompactDeploymentRegistry } from './CompactDeploymentRegistry';
-import { Loader2 } from 'lucide-react';
+import { Loader2, AlertTriangle } from 'lucide-react';
 
 export const OverviewPage: React.FC = () => {
-  const { data: cellCorrelations, isLoading: isCellsLoading } = useQuery({
+  const { data: cellCorrelations, isLoading: isCellsLoading, isError: isCellsError, error: cellsError } = useQuery({
     queryKey: ['cell-correlations'],
     queryFn: fetchCellCorrelations,
   });
@@ -83,6 +83,23 @@ export const OverviewPage: React.FC = () => {
       cycles: r.n_cycles,
     }));
   }, [cellCorrelations]);
+
+  if (isCellsError) {
+    const message = cellsError instanceof Error ? cellsError.message : 'Unknown error';
+    return (
+      <div className="p-16 flex flex-col items-center justify-center space-y-4 min-h-[500px]">
+        <AlertTriangle className="w-10 h-10 text-rose-400" />
+        <div className="text-center space-y-1">
+          <p className="text-base font-semibold text-rose-400">API Unavailable</p>
+          <p className="text-sm font-mono text-slate-400">{message}</p>
+          <p className="text-xs text-slate-500 mt-2">
+            Make sure the BIP API server is running on{' '}
+            <code className="text-cyan-400">http://localhost:8000</code>
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   if (isCellsLoading || !cellCorrelations) {
     return (
