@@ -1,89 +1,72 @@
-import React, { useEffect } from 'react';
+/**
+ * AppLayout.tsx
+ *
+ * Core App Shell Layout for Battery Intelligence Platform.
+ * Enforces independent scroll architecture:
+ * - Fixed Topbar (54px)
+ * - Fixed/Independent Sidebar Scroll Container
+ * - Independent Main Content Scroll Container (#main-content-scroll)
+ * - Workspace Scroll Position Persistence
+ */
+import React, { useEffect, useRef } from 'react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
-import { useAppStore, SectionId } from '../../store/useAppStore';
+import { useAppStore } from '../../store/useAppStore';
 
 interface AppLayoutProps {
   children: React.ReactNode;
 }
 
 export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
-  const { setActiveSection } = useAppStore();
+  const currentWorkspace = useAppStore((state) => state.currentWorkspace);
+  const saveWorkspaceScrollPosition = useAppStore((state) => state.saveWorkspaceScrollPosition);
+  const workspaceScrollPositions = useAppStore((state) => state.workspaceScrollPositions);
 
+  const mainContentRef = useRef<HTMLElement>(null);
+  const prevWorkspaceRef = useRef(currentWorkspace);
+
+  // Restore scroll position when workspace changes
   useEffect(() => {
-    const sectionIds: SectionId[] = [
-      'degradation',
-      'dynamic-signatures',
-      'cross-chemistry',
-      'model-intelligence',
-      'cell-inspector',
-      'artifacts',
-      'deployment',
-    ];
+    const mainEl = mainContentRef.current;
+    if (!mainEl) return;
 
-    let isTicking = false;
+    // Save previous workspace scroll position
+    if (prevWorkspaceRef.current !== currentWorkspace) {
+      saveWorkspaceScrollPosition(prevWorkspaceRef.current, mainEl.scrollTop);
+      prevWorkspaceRef.current = currentWorkspace;
 
-    const handleScroll = () => {
-      if (isTicking) return;
-      isTicking = true;
+      // Restore new workspace scroll position
+      const savedPos = workspaceScrollPositions[currentWorkspace] || 0;
       requestAnimationFrame(() => {
-        isTicking = false;
-        const scrollY = window.scrollY || window.pageYOffset;
-        const windowHeight = window.innerHeight;
-        const docHeight = document.documentElement.scrollHeight;
-
-        // Bottom detection: if user scrolled near the bottom of the page, activate STM32 Deployment
-        if (scrollY + windowHeight >= docHeight - 90) {
-          setActiveSection('deployment');
-          return;
-        }
-
-        // Top detection: if user is at the very top, activate first section
-        if (scrollY < 180) {
-          setActiveSection('degradation');
-          return;
-        }
-
-        // Target trigger offset from viewport top
-        const triggerY = 220;
-        let matchedSection: SectionId = 'degradation';
-
-        for (let i = 0; i < sectionIds.length; i++) {
-          const id = sectionIds[i];
-          const el = document.getElementById(id);
-          if (el) {
-            const rect = el.getBoundingClientRect();
-            if (rect.top <= triggerY) {
-              matchedSection = id;
-            }
-          }
-        }
-
-        setActiveSection(matchedSection);
+        mainEl.scrollTop = savedPos;
       });
-    };
+    }
+  }, [currentWorkspace, saveWorkspaceScrollPosition, workspaceScrollPositions]);
 
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    window.addEventListener('resize', handleScroll, { passive: true });
-
-    // Initial check on load
-    handleScroll();
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-    };
-  }, [setActiveSection]);
+  // Track main content scroll position
+  const handleMainScroll = () => {
+    if (mainContentRef.current) {
+      saveWorkspaceScrollPosition(currentWorkspace, mainContentRef.current.scrollTop);
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-[var(--bg-root)] text-[var(--text-primary)] transition-colors duration-150 flex flex-col">
-      {/* Top Application Header (Sticky at top of viewport) */}
+    <div className="h-screen w-screen overflow-hidden bg-[var(--bg-root)] text-[var(--text-primary)] transition-colors duration-150 flex flex-col">
+      {/* 1. TOPBAR (Fixed height 54px) */}
       <Topbar />
 
-      {/* Main Document Layout: Sticky Sidebar + Main Workspace scroll naturally */}
-      <div className="flex-1 flex w-full">
+      {/* 2. APPLICATION BODY (Fixed height calc(100vh - 54px)) */}
+      <div className="flex-1 flex w-full min-h-0 h-[calc(100vh-54px)] overflow-hidden">
+        {/* INDEPENDENT SIDEBAR */}
         <Sidebar />
-        <main className="flex-1 min-w-0 p-4 sm:p-5 lg:p-6 space-y-6 max-w-[1600px] mx-auto">
+
+        {/* INDEPENDENT MAIN CONTENT SCROLL CONTAINER */}
+        <main
+          id="main-content-scroll"
+          ref={mainContentRef}
+          onScroll={handleMainScroll}
+          className="main-content flex-1 min-w-0 min-h-0 h-full overflow-y-auto overscroll-contain p-4 sm:p-5 lg:p-6 space-y-6 max-w-[1600px] mx-auto"
+        >
           {children}
         </main>
       </div>

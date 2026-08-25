@@ -1,11 +1,11 @@
 import React from 'react';
-import { Database, Cpu, Sun, Moon } from 'lucide-react';
+import { Sun, Moon, Activity, Layers, ShieldCheck } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
-import { fetchHealth, fetchOverviewSummary, fetchDeploymentSummary } from '../../api/overview';
+import { fetchHealth } from '../../api/overview';
 import { useAppStore } from '../../store/useAppStore';
 
 export const Topbar: React.FC = () => {
-  const { theme, toggleTheme } = useAppStore();
+  const { currentWorkspace, setWorkspace, theme, toggleTheme } = useAppStore();
 
   const { data: health } = useQuery({
     queryKey: ['health'],
@@ -13,75 +13,84 @@ export const Topbar: React.FC = () => {
     refetchInterval: 30000,
   });
 
-  const { data: summary } = useQuery({
-    queryKey: ['overview-summary'],
-    queryFn: fetchOverviewSummary,
-  });
-
-  const { data: deployment } = useQuery({
-    queryKey: ['deployment-summary'],
-    queryFn: fetchDeploymentSummary,
-  });
-
-  const manuscriptTitle =
-    'Embedded Battery Degradation Monitoring Hardware System with Timer Triggered DMA Double-Buffer Acquisition and Ripple-Feature Extraction Circuit on ARM Cortex-M Microcontroller';
-
   return (
-    <header className="sticky top-0 z-30 px-4 sm:px-6 py-3 flex flex-wrap items-center justify-between gap-3 select-none bg-[var(--bg-topbar)] border-b border-[var(--border-main)] transition-colors duration-150 w-full">
-      {/* Brand & Exact Manuscript Title */}
-      <div className="flex items-center gap-3 min-w-0 flex-1">
+    <header className="h-[54px] px-4 sm:px-5 flex items-center justify-between gap-3 select-none bg-[var(--bg-topbar)] border-b border-[var(--border-main)] transition-colors duration-150 w-full shrink-0 z-30">
+      {/* Left: Brand & Workspace Switcher */}
+      <div className="flex items-center gap-4 min-w-0">
         <div className="flex items-center gap-2 shrink-0">
           <span className="font-sans font-bold text-sm sm:text-base tracking-tight text-[var(--text-primary)] whitespace-nowrap">
             Battery Intelligence Platform
           </span>
         </div>
-        <span className="text-[var(--border-main)] hidden md:inline">|</span>
-        <span
-          className="text-xs text-[var(--text-muted)] font-sans truncate cursor-help hidden sm:inline"
-          title={manuscriptTitle}
-        >
-          {manuscriptTitle}
-        </span>
+
+        {/* 3-Workspace Switcher */}
+        <div className="flex items-center p-0.5 rounded-lg bg-[var(--bg-panel-sub)] border border-[var(--border-sub)] font-mono text-[11px]">
+          <button
+            id="ws-research-btn"
+            onClick={() => setWorkspace('research')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+              currentWorkspace === 'research'
+                ? 'bg-[var(--bg-panel)] text-[var(--text-primary)] font-bold shadow-xs border border-[var(--border-main)]'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 text-[var(--accent-thermal)]" />
+            <span>RESEARCH</span>
+          </button>
+
+          <button
+            id="ws-live-btn"
+            onClick={() => setWorkspace('live')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+              currentWorkspace === 'live'
+                ? 'bg-[var(--bg-panel)] text-[var(--accent-live)] font-bold shadow-xs border border-[var(--border-main)]'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+            }`}
+          >
+            <Activity className="w-3.5 h-3.5 text-[var(--accent-live)] animate-pulse" />
+            <span>LIVE TRACKING</span>
+          </button>
+
+          <button
+            id="ws-grid-btn"
+            onClick={() => setWorkspace('grid')}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md transition-all cursor-pointer ${
+              currentWorkspace === 'grid'
+                ? 'bg-[var(--bg-panel)] text-[var(--accent-voltage)] font-bold shadow-xs border border-[var(--border-main)]'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-secondary)]'
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-[var(--accent-voltage)]" />
+            <span>GRID OPERATIONS</span>
+          </button>
+        </div>
       </div>
 
-      {/* Engineering Status Readouts & Theme Toggle */}
-      <div className="flex items-center gap-2.5 shrink-0 text-xs font-mono">
-        {/* Dataset Counter */}
-        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-panel-sub)] border border-[var(--border-sub)] text-[var(--text-secondary)] text-[11px]">
-          <Database className="w-3 h-3 text-[var(--accent-ripple)]" />
-          <span className="font-semibold text-[var(--text-primary)]">{summary?.total_cells ?? 20} Cells</span>
-          <span className="text-[var(--border-main)]">•</span>
-          <span className="text-[var(--accent-voltage)]">LFP: 8</span>
-          <span className="text-[var(--border-main)]">•</span>
-          <span className="text-[var(--accent-current)]">NMC: 8</span>
-          <span className="text-[var(--border-main)]">•</span>
-          <span className="text-[var(--accent-thermal)]">LCO: 4</span>
-        </div>
-
-        {/* Embedded Target MCU */}
-        <div className="hidden lg:flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-panel-sub)] border border-[var(--border-sub)] text-[11px] text-[var(--text-muted)]">
-          <Cpu className="w-3 h-3 text-[var(--accent-model)]" />
-          <span>MCU:</span>
-          <span className="text-[var(--text-primary)] font-semibold">{deployment?.target_mcu ?? 'STM32F446RE'}</span>
-        </div>
-
-        {/* Backend Connectivity Status */}
+      {/* Right: Contextual System Info */}
+      <div className="flex items-center gap-2 shrink-0 text-xs font-mono">
+        {/* Backend API Status */}
         <div className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-panel-sub)] border border-[var(--border-sub)] text-[11px]">
           <span
             className={`w-1.5 h-1.5 rounded-full ${
               health?.status === 'healthy' ? 'bg-[var(--accent-healthy)] animate-pulse' : 'bg-[var(--accent-current)]'
             }`}
           />
-          <span className={health?.status === 'healthy' ? 'text-[var(--text-secondary)]' : 'text-[var(--accent-current)]'}>
-            {health?.status === 'healthy' ? 'FastAPI Connected' : 'Connecting...'}
+          <span className={health?.status === 'healthy' ? 'text-[var(--text-secondary)] font-semibold' : 'text-[var(--accent-current)]'}>
+            API
           </span>
         </div>
 
-        {/* Theme Toggle Button (Light / Dark Mode) */}
+        {/* Source System Status */}
+        <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-panel-sub)] border border-[var(--border-sub)] text-[11px]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-live)] animate-pulse" />
+          <span className="text-[var(--accent-live)] font-semibold uppercase">SYSTEM</span>
+        </div>
+
+        {/* Theme Toggle Button */}
         <button
           onClick={toggleTheme}
           title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
-          className="p-1.5 px-2 rounded-md bg-[var(--bg-panel-sub)] border border-[var(--border-sub)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] transition-all flex items-center gap-1.5 cursor-pointer shadow-sm"
+          className="p-1.5 px-2 rounded-md bg-[var(--bg-panel-sub)] border border-[var(--border-sub)] text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:border-[var(--border-hover)] transition-all flex items-center gap-1.5 cursor-pointer shadow-xs"
         >
           {theme === 'dark' ? (
             <Sun className="w-3.5 h-3.5 text-amber-400" />

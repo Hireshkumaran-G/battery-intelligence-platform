@@ -111,48 +111,62 @@ export const OverviewPage: React.FC = () => {
   }
 
   return (
-    <div className="space-y-6 pb-16">
+    <div id="research-overview" className="space-y-6 pb-16">
       {/* 1. Global Analysis Header (Filters & Quick Jumps) */}
       <GlobalAnalysisHeader availableCells={availableCells} />
 
       {/* 2. Primary Degradation & Lifespan Envelope Visualization */}
-      <PrimaryDegradationChart data={cellCorrelations} />
+      <div id="degradation">
+        <PrimaryDegradationChart data={cellCorrelations} />
+      </div>
 
       {/* 3. Dynamic Ripple Signatures & NMC Sign Reversal Workbench */}
       {signedVsAbs && sensitivity && signReversalSummary && interactionStats && (
-        <DynamicSignatureWorkbench
-          signedVsAbs={signedVsAbs}
-          sensitivity={sensitivity}
-          signReversalSummary={signReversalSummary}
-          interactionStats={interactionStats}
-        />
+        <div id="dynamic-signatures">
+          <DynamicSignatureWorkbench
+            signedVsAbs={signedVsAbs}
+            sensitivity={sensitivity}
+            signReversalSummary={signReversalSummary}
+            interactionStats={interactionStats}
+          />
+        </div>
       )}
 
       {/* 4. Cross-Chemistry Transferability & LOCO Matrix */}
       {transferData && withinData && locoData && (
-        <CrossChemistryTransferHeatmap
-          transferData={transferData}
-          withinData={withinData}
-          locoData={locoData}
-        />
+        <div id="cross-chemistry">
+          <CrossChemistryTransferHeatmap
+            transferData={transferData}
+            withinData={withinData}
+            locoData={locoData}
+          />
+        </div>
       )}
 
       {/* 5. Model Intelligence & 3-Strategy Benchmark */}
       {strategyData && featureImportanceData && (
-        <ModelStrategyBenchmark
-          strategyData={strategyData}
-          featureImportanceData={featureImportanceData}
-        />
+        <div id="model-intelligence">
+          <ModelStrategyBenchmark
+            strategyData={strategyData}
+            featureImportanceData={featureImportanceData}
+          />
+        </div>
       )}
 
       {/* 6. Cell-Level Deep-Dive Inspector */}
-      <CellAnalysisInspector data={cellCorrelations} />
+      <div id="cell-inspector">
+        <CellAnalysisInspector data={cellCorrelations} />
+      </div>
 
       {/* 7. Research Artifacts Explorer */}
-      <CompactArtifactExplorer />
+      <div id="artifacts">
+        <CompactArtifactExplorer />
+      </div>
 
       {/* 8. STM32 Embedded TinyML Deployment Registry */}
-      <CompactDeploymentRegistry />
+      <div id="deployment">
+        <CompactDeploymentRegistry />
+      </div>
     </div>
   );
 };

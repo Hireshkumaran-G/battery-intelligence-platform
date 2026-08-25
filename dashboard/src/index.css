@@ -40,6 +40,7 @@
     --accent-model: #9333EA;     /* Purple / TinyML / RF */
     --accent-healthy: #059669;   /* Emerald / Observed EOL */
     --accent-censored: #64748B;  /* Slate / Right-Censored */
+    --accent-live: #10B981;      /* Emerald Green / Live Acquisition */
   }
 
   .dark {
@@ -79,6 +80,7 @@
     --accent-model: #A855F7;     /* Purple / TinyML / RF */
     --accent-healthy: #10B981;   /* Emerald / Observed EOL */
     --accent-censored: #64748B;  /* Slate / Right-Censored */
+    --accent-live: #34D399;      /* Emerald Green / Live Acquisition */
   }
 
   html {
@@ -105,16 +107,55 @@
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-root);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--border-main);
+  background: var(--border-sub);
   border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-hover);
+}
+
+.sidebar-nav::-webkit-scrollbar,
+.main-content::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb,
+.main-content::-webkit-scrollbar-thumb {
+  background: var(--border-sub);
+  border-radius: 3px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover,
+.main-content::-webkit-scrollbar-thumb:hover {
+  background: var(--border-hover);
+}
+
+/* Page Transition (<150ms transform/opacity, low GPU cost) */
+.page-transition {
+  animation: pageEnter 140ms ease-out;
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    animation: none !important;
+  }
 }
 
 /* Layered Workstation Surfaces */

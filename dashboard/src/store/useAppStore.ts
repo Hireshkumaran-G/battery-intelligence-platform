@@ -2,19 +2,63 @@ import { create } from 'zustand';
 
 export type ChemistryFilter = 'ALL' | 'LFP' | 'NMC' | 'LCO';
 
+export type DashboardMode = 'research' | 'live';
+
+export type WorkspaceId = 'research' | 'live' | 'grid';
+
 export type SectionId =
-  | 'overview-summary'
+  // Research Workspace
+  | 'research-overview'
   | 'degradation'
   | 'dynamic-signatures'
   | 'cross-chemistry'
   | 'model-intelligence'
   | 'cell-inspector'
   | 'artifacts'
-  | 'deployment';
+  | 'validation'
+  | 'deployment'
+  // Live Tracking Workspace
+  | 'live-overview'
+  | 'live-hardware'
+  | 'live-signals'
+  | 'live-hardware-deployment'
+  | 'live-vitals'
+  | 'live-ripple'
+  | 'live-spectral'
+  | 'live-kinetics'
+  | 'live-stm32'
+  | 'live-mcu-status'
+  | 'live-diagnostics'
+  | 'live-sequence'
+  // Grid Operations Workspace
+  | 'command-center'
+  | 'fleet'
+  | 'anomaly-center'
+  | 'grid-events'
+  | 'grid-degradation'
+  | 'grid-soh-rul'
+  | 'grid-forecast'
+  | 'grid-cross-chem'
+  | 'grid-fleet-assets'
+  | 'grid-asset-details'
+  | 'grid-maintenance'
+  | 'grid-recommendations'
+  | 'grid-reports';
 
 export type ThemeMode = 'dark' | 'light';
 
 interface AppState {
+  // Workspaces
+  currentWorkspace: WorkspaceId;
+  setWorkspace: (ws: WorkspaceId) => void;
+  workspaceScrollPositions: Record<WorkspaceId, number>;
+  saveWorkspaceScrollPosition: (ws: WorkspaceId, pos: number) => void;
+
+  // Legacy mode mapping
+  mode: DashboardMode;
+  setMode: (mode: DashboardMode) => void;
+  toggleMode: () => void;
+
   theme: ThemeMode;
   setTheme: (theme: ThemeMode) => void;
   toggleTheme: () => void;
@@ -29,6 +73,15 @@ interface AppState {
   setSelectedCellId: (cellId: string) => void;
   selectedArtifactId: string;
   setSelectedArtifactId: (id: string) => void;
+
+  // Grid & BESS Operator additions
+  selectedBessPack: string;
+  setSelectedBessPack: (packId: string) => void;
+  isOperatorModalOpen: boolean;
+  setOperatorModalOpen: (open: boolean) => void;
+  toggleOperatorModal: () => void;
+  acknowledgedAlertIds: string[];
+  acknowledgeAlert: (alertId: string) => void;
 }
 
 const getInitialTheme = (): ThemeMode => {
@@ -71,6 +124,49 @@ const getInitialSidebarState = (): boolean => {
 };
 
 export const useAppStore = create<AppState>((set) => ({
+  currentWorkspace: 'research',
+  workspaceScrollPositions: {
+    research: 0,
+    live: 0,
+    grid: 0,
+  },
+  setWorkspace: (ws) => {
+    const mode: DashboardMode = ws === 'live' ? 'live' : 'research';
+    let defaultSection: SectionId = 'command-center';
+    if (ws === 'research') defaultSection = 'research-overview';
+    if (ws === 'live') defaultSection = 'live-hardware';
+    if (ws === 'grid') defaultSection = 'command-center';
+
+    set({
+      currentWorkspace: ws,
+      mode,
+      activeSection: defaultSection,
+    });
+  },
+  saveWorkspaceScrollPosition: (ws, pos) =>
+    set((state) => ({
+      workspaceScrollPositions: {
+        ...state.workspaceScrollPositions,
+        [ws]: pos,
+      },
+    })),
+
+  mode: 'research',
+  setMode: (mode) =>
+    set({
+      mode,
+      currentWorkspace: mode === 'live' ? 'live' : 'research',
+      activeSection: mode === 'live' ? 'live-hardware' : 'research-overview',
+    }),
+  toggleMode: () =>
+    set((state) => {
+      const nextMode = state.mode === 'research' ? 'live' : 'research';
+      return {
+        mode: nextMode,
+        currentWorkspace: nextMode === 'live' ? 'live' : 'research',
+        activeSection: nextMode === 'live' ? 'live-hardware' : 'research-overview',
+      };
+    }),
   theme: getInitialTheme(),
   setTheme: (theme) => {
     localStorage.setItem('bip_theme', theme);
@@ -97,7 +193,7 @@ export const useAppStore = create<AppState>((set) => ({
       return { isSidebarCollapsed: next };
     });
   },
-  activeSection: 'degradation',
+  activeSection: 'research-overview',
   setActiveSection: (section) => set({ activeSection: section }),
   selectedChemistry: 'ALL',
   setSelectedChemistry: (chem) => set({ selectedChemistry: chem }),
@@ -105,4 +201,18 @@ export const useAppStore = create<AppState>((set) => ({
   setSelectedCellId: (cellId) => set({ selectedCellId: cellId }),
   selectedArtifactId: 'cell_correlation_audit',
   setSelectedArtifactId: (id) => set({ selectedArtifactId: id }),
+
+  // Grid & BESS Operator additions
+  selectedBessPack: 'Pack-01',
+  setSelectedBessPack: (packId) => set({ selectedBessPack: packId }),
+  isOperatorModalOpen: false,
+  setOperatorModalOpen: (open) => set({ isOperatorModalOpen: open }),
+  toggleOperatorModal: () => set((state) => ({ isOperatorModalOpen: !state.isOperatorModalOpen })),
+  acknowledgedAlertIds: [],
+  acknowledgeAlert: (alertId) =>
+    set((state) => ({
+      acknowledgedAlertIds: state.acknowledgedAlertIds.includes(alertId)
+        ? state.acknowledgedAlertIds
+        : [...state.acknowledgedAlertIds, alertId],
+    })),
 }));
