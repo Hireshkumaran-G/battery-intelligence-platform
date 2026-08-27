@@ -5,7 +5,7 @@
 
 #define NUM_FEATURES 18
 
-static const float bip_scaler_mean[NUM_FEATURES] = {
+static const float bip_scaler_mean[NUM_FEATURES] __attribute__((unused)) = {
     2.93601297f,
     0.26979157f,
     2.20199265f,
@@ -26,7 +26,7 @@ static const float bip_scaler_mean[NUM_FEATURES] = {
     2.67543851f,
 };
 
-static const float bip_scaler_scale[NUM_FEATURES] = {
+static const float bip_scaler_scale[NUM_FEATURES] __attribute__((unused)) = {
     0.03725504f,
     0.02956872f,
     0.07444143f,

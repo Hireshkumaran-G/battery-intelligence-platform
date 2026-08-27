@@ -112,7 +112,8 @@ async def update_live_config(request: Request, config: SimConfig):
 # ---------------------------------------------------------------------------
 
 @router.websocket("/live/telemetry")
-async def websocket_telemetry(websocket: WebSocket, request: Request):
+async def websocket_telemetry(websocket: WebSocket):
+
     """
     WebSocket endpoint that streams TelemetryFrame JSON at sample_rate Hz.
 

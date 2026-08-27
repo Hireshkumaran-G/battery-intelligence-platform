@@ -13,7 +13,7 @@ typedef struct {
 
 #define BIP_TREE_NODES 61
 
-static const TreeNode_t bip_tree[BIP_TREE_NODES] = {
+static const TreeNode_t bip_tree[BIP_TREE_NODES] __attribute__((unused)) = {
     { 0, -2.18926454f, 1, 32, 0.97576597f },
     { 10, -0.07680801f, 2, 17, 0.87718958f },
     { 5, -3.00409782f, 3, 10, 0.85100304f },

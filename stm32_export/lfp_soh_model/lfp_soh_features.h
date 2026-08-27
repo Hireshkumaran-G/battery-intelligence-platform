@@ -24,7 +24,7 @@ typedef enum {
     BIP_FEATURE_17 = 17,
 } BipFeatureIndex_e;
 
-static const char* bip_feature_names[BIP_NUM_FEATURES] = {
+static const char* const bip_feature_names[BIP_NUM_FEATURES] __attribute__((unused)) = {
     "voltage_mean",
     "voltage_std",
     "voltage_min",

@@ -12,16 +12,34 @@ from bip_api.routers import live as live_router
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
-    Application lifespan: initialise the active telemetry source at startup.
-
-    Phase 1 (current): SimulatedTelemetrySource
-    Phase 2 (future):  Replace with STM32SerialSource(port='/dev/ttyACM0')
-                        — no other code changes required.
+    Application lifespan: initialise active telemetry source at startup.
+    Checks for connected STM32 USB serial port (/dev/ttyACM0, /dev/ttyUSB0, or COMx).
+    Falls back to SimulatedTelemetrySource if no physical board is plugged in.
     """
-    app.state.telemetry_source = SimulatedTelemetrySource(config=SimConfig())
+    import os
+    import glob
+
+    serial_port = os.getenv("BIP_SERIAL_PORT")
+    if not serial_port:
+        # Auto-detect Linux ST-LINK serial devices
+        acm_ports = glob.glob("/dev/ttyACM*") + glob.glob("/dev/ttyUSB*")
+        if acm_ports:
+            serial_port = acm_ports[0]
+
+    if serial_port:
+        try:
+            from bip_api.live.stm32_serial import STM32SerialTelemetrySource
+            app.state.telemetry_source = STM32SerialTelemetrySource(port=serial_port, baudrate=115200)
+            print(f"✓ Initialized STM32 USB Serial Telemetry Source on {serial_port}")
+        except Exception as exc:
+            app.state.telemetry_source = SimulatedTelemetrySource(config=SimConfig())
+            print(f"✓ Initialized Simulated Telemetry Source (Fallback: {exc})")
+    else:
+        app.state.telemetry_source = SimulatedTelemetrySource(config=SimConfig())
+        print("✓ Initialized Simulated Telemetry Source")
+
     yield
-    # Cleanup: nothing needed for the simulated source
-    # Future: close serial port here for STM32SerialSource
+
 
 app = FastAPI(
     title="Battery Intelligence Platform (BIP) API",

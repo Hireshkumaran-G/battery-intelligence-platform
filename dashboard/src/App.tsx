@@ -140,14 +140,19 @@ const DashboardContent: React.FC = () => {
   );
 };
 
+import { TelemetryProvider } from './context/TelemetryContext';
+
 export const App: React.FC = () => {
   return (
     <QueryClientProvider client={queryClient}>
-      <AppLayout>
-        <DashboardContent />
-      </AppLayout>
+      <TelemetryProvider>
+        <AppLayout>
+          <DashboardContent />
+        </AppLayout>
+      </TelemetryProvider>
     </QueryClientProvider>
   );
 };
+
 
 export default App;

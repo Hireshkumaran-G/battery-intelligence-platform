@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include <stddef.h>
 #include "lco_soh_features.h"
+#include "lco_soh_scaler.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -40,7 +41,6 @@ typedef struct {
 void BIP_InferenceInit(void);
 InferenceResult_t BIP_Inference(const FeatureVector_t* features);
 void BIP_ExtractFeatures(const AdcSample_t* samples, uint32_t num_samples, FeatureVector_t* features);
-void BIP_ScaleFeatures(const float* raw_features, float* scaled_features);
 
 #ifdef __cplusplus
 }
