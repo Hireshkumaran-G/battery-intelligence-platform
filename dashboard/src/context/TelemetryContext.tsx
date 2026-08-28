@@ -45,7 +45,21 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
   const shouldReconnectRef = useRef(true);
 
   const openConnection = useCallback(() => {
-    if (wsRef.current?.readyState === WebSocket.OPEN) return;
+    if (
+      wsRef.current?.readyState === WebSocket.OPEN ||
+      wsRef.current?.readyState === WebSocket.CONNECTING
+    ) {
+      return;
+    }
+
+    if (wsRef.current) {
+      wsRef.current.onopen = null;
+      wsRef.current.onmessage = null;
+      wsRef.current.onerror = null;
+      wsRef.current.onclose = null;
+      wsRef.current.close();
+      wsRef.current = null;
+    }
 
     setConnectionState('connecting');
     const url = getLiveWsUrl();
@@ -60,6 +74,8 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
 
     ws.onmessage = (event: MessageEvent<string>) => {
+      if (!shouldReconnectRef.current) return;
+
       try {
         const frame = JSON.parse(event.data) as TelemetryFrame;
         frameCountRef.current += 1;
@@ -84,7 +100,9 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     };
 
     ws.onerror = () => {
-      setConnectionState('error');
+      if (shouldReconnectRef.current) {
+        setConnectionState('error');
+      }
     };
 
     ws.onclose = () => {
@@ -121,6 +139,10 @@ export const TelemetryProvider: React.FC<{ children: React.ReactNode }> = ({ chi
     shouldReconnectRef.current = false;
     if (reconnectTimerRef.current) clearTimeout(reconnectTimerRef.current);
     if (wsRef.current) {
+      wsRef.current.onopen = null;
+      wsRef.current.onmessage = null;
+      wsRef.current.onerror = null;
+      wsRef.current.onclose = null;
       wsRef.current.close(1000, 'User disconnect');
       wsRef.current = null;
     }

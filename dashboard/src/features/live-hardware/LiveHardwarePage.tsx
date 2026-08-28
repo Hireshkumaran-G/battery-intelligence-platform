@@ -7,7 +7,7 @@
  *
  * SOH and RUL are strictly excluded from TelemetryFrame by design.
  */
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useLiveTelemetry } from '../../hooks/useLiveTelemetry';
 import { LiveConnectionBar } from './LiveConnectionBar';
 import { LiveVitalPanel } from './LiveVitalPanel';
@@ -34,13 +34,6 @@ export const LiveHardwarePage: React.FC = () => {
     disconnect,
     clearFrames,
   } = useLiveTelemetry();
-
-  // Auto-connect on mount if disconnected
-  useEffect(() => {
-    if (connectionState === 'disconnected') {
-      connect();
-    }
-  }, []);
 
   const activePack = DEMO_BESS_PACKS.find((p) => p.id === selectedBessPack) || DEMO_BESS_PACKS[0];
 
