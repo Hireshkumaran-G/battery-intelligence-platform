@@ -1,7 +1,11 @@
 from contextlib import asynccontextmanager
+from pathlib import Path
+import glob
+import os
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from bip_api.config import CORS_ORIGINS
 from bip_api.live.simulator import SimConfig, SimulatedTelemetrySource
@@ -16,9 +20,6 @@ async def lifespan(app: FastAPI):
     Checks for connected STM32 USB serial port (/dev/ttyACM0, /dev/ttyUSB0, or COMx).
     Falls back to SimulatedTelemetrySource if no physical board is plugged in.
     """
-    import os
-    import glob
-
     serial_port = os.getenv("BIP_SERIAL_PORT")
     if not serial_port:
         # Auto-detect Linux ST-LINK serial devices
@@ -63,7 +64,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ── Research Dashboard Routers (Phase 1) — unchanged ──────────────────────
+# ── Research Dashboard Routers (Phase 1) ──────────────────────────────────
 app.include_router(overview.router, prefix="/api/v1")
 app.include_router(artifacts.router, prefix="/api/v1")
 app.include_router(deployment.router, prefix="/api/v1")
@@ -74,8 +75,9 @@ app.include_router(deployment.router, prefix="/api/v1")
 app.include_router(live_router.router, prefix="/ws/v1")
 
 
-@app.get("/")
-async def root():
+@app.get("/api")
+@app.get("/api/health")
+async def api_info():
     return {
         "platform": "Battery Intelligence Platform (BIP)",
         "status": "operational",
@@ -84,3 +86,21 @@ async def root():
         "research_api": "/api/v1",
         "live_api": "/ws/v1",
     }
+
+
+# ── Mount Production Dashboard Build (if compiled) ─────────────────────────
+dist_path = Path(__file__).resolve().parent.parent / "dashboard" / "dist"
+if dist_path.exists() and (dist_path / "index.html").exists():
+    app.mount("/", StaticFiles(directory=str(dist_path), html=True), name="dashboard_static")
+else:
+    @app.get("/")
+    async def root_fallback():
+        return {
+            "platform": "Battery Intelligence Platform (BIP)",
+            "status": "operational",
+            "api_docs": "/docs",
+            "version": "0.2.0",
+            "research_api": "/api/v1",
+            "live_api": "/ws/v1",
+            "dashboard_status": "Vite dev server running at http://localhost:5173 or run 'npm run build' inside dashboard/ to serve statically.",
+        }

@@ -311,11 +311,20 @@ battery-intelligence-platform/
    cd battery-intelligence-platform
    ```
 
-2. **Install Python Dependencies**:
+2. **Environment Setup (Recommended: Conda)**:
+   Create and activate the unified Conda environment (installs Python 3.11, all scientific/ML stack, API server, development tools, Node.js, and editable BIP package):
    ```bash
-   pip install -r requirements.txt
+   conda env create -f environment.yml
+   conda activate bip
    ```
-   > Installs the full ML stack (numpy, scipy, scikit-learn, …) plus the API server (FastAPI, Uvicorn, Pydantic).
+
+   *Alternative (Standard Pip / Virtualenv)*:
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   pip install -r requirements.txt
+   pip install -e .
+   ```
 
 3. **Download Datasets** (see `DATA.md` for full instructions):
    ```bash
@@ -352,21 +361,27 @@ battery-intelligence-platform/
    python scripts/export_all_chemistry_models.py
    ```
 
-7. **Launch the Research Dashboard**:
+7. **Launch the Research Dashboard & API**:
 
-   Start the FastAPI backend (serves artifact CSVs and deployment registry):
+   **Option A: Unified 1-Command Launcher (Starts Backend + Frontend)**:
+   ```bash
+   python scripts/launch_platform.py
+   ```
+
+   **Option B: Manual Service Startup**:
+   Start the FastAPI backend:
    ```bash
    uvicorn bip_api.main:app --reload --host 0.0.0.0 --port 8000
    ```
-   Interactive API docs available at `http://localhost:8000/docs`.
+   *Interactive API docs available at `http://localhost:8000/docs`.*
 
-   In a separate terminal, start the Vite frontend:
+   In a separate terminal, start the Vite dashboard frontend:
    ```bash
    cd dashboard
    npm install
    npm run dev
    ```
-   Dashboard available at `http://localhost:5173`.
+   *Dashboard available at `http://localhost:5173`.*
 
 ---
 
