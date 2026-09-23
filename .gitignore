@@ -99,3 +99,9 @@ BIP_STM32/Debug/
 *.list
 *.map
 
+
+# Patent forms & local documents (not for git)
+patent_form/
+*.docx
+*.doc
+*.pdf
