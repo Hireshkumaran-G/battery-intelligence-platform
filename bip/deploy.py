@@ -48,7 +48,7 @@ class STM32ModelExporter:
         inference_h = self._generate_inference_header(fit_model, model_name, out_dir)
         features_h = self._generate_features_header(feature_names, model_name, out_dir)
         params_h = self._generate_model_params_header(fit_model, model_name, out_dir)
-        scaler_h = self._generate_scaler_header(scaler_params, model_name, out_dir)
+        scaler_h = self._generate_scaler_header(scaler_params, model_name, out_dir, num_features=len(feature_names))
         main_c = self._generate_inference_implementation(fit_model, feature_names, model_name, out_dir)
         metadata_json = self._generate_metadata(fit_model, feature_names, model_name, out_dir)
 
@@ -257,26 +257,28 @@ class STM32ModelExporter:
         h_file.write_text("\n".join(lines), encoding="utf-8")
         return h_file
 
-    def _generate_scaler_header(self, scaler_params: Optional[Dict[str, Any]], name: str, out_dir: Path) -> Path:
+    def _generate_scaler_header(self, scaler_params: Optional[Dict[str, Any]], name: str, out_dir: Path, num_features: Optional[int] = None) -> Path:
         h_file = out_dir / f"{name}_scaler.h"
         name_upper = name.upper()
+        n_feats = num_features if num_features is not None else 37
 
         if scaler_params is None:
-            mean_vals = [0.0] * 37
-            scale_vals = [1.0] * 37
+            mean_vals = [0.0] * n_feats
+            scale_vals = [1.0] * n_feats
         else:
-            mean_vals = scaler_params.get("mean", [0.0] * 37)
-            scale_vals = scaler_params.get("scale", [1.0] * 37)
+            mean_vals = scaler_params.get("mean", [0.0] * n_feats)
+            scale_vals = scaler_params.get("scale", [1.0] * n_feats)
 
         lines = [
             f"#ifndef {name_upper}_SCALER_H",
             f"#define {name_upper}_SCALER_H",
             "",
             "#include <stdint.h>",
+            f'#include "{name}_features.h"',
             "",
-            f"#define NUM_FEATURES {len(mean_vals)}",
+            f"#define BIP_SCALER_NUM_FEATURES {len(mean_vals)}",
             "",
-            "static const float bip_scaler_mean[NUM_FEATURES] = {",
+            "static const float bip_scaler_mean[BIP_SCALER_NUM_FEATURES] = {",
         ]
 
         for val in mean_vals:
@@ -285,7 +287,7 @@ class STM32ModelExporter:
         lines.extend([
             "};",
             "",
-            "static const float bip_scaler_scale[NUM_FEATURES] = {",
+            "static const float bip_scaler_scale[BIP_SCALER_NUM_FEATURES] = {",
         ])
 
         for val in scale_vals:
@@ -295,7 +297,7 @@ class STM32ModelExporter:
             "};",
             "",
             "static inline void BIP_ScaleFeatures(const float* raw, float* scaled) {",
-            "    for (uint8_t i = 0; i < NUM_FEATURES; i++) {",
+            "    for (uint8_t i = 0; i < BIP_NUM_FEATURES && i < BIP_SCALER_NUM_FEATURES; i++) {",
             "        scaled[i] = (raw[i] - bip_scaler_mean[i]) / bip_scaler_scale[i];",
             "    }",
             "}",

@@ -8,7 +8,7 @@ import logging
 from dataclasses import dataclass
 import numpy as np
 from scipy.signal import butter, filtfilt
-from typing import Literal, Optional, Sequence, Tuple
+from typing import List, Literal, Optional, Sequence, Tuple
 
 from bip.config import ConfigManager, SignalProcessingConfig
 

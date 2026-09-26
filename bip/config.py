@@ -33,6 +33,10 @@ class GeneralConfig:
     base_data_path: Path = Path("data")
     log_level: str = "INFO"
 
+    def __post_init__(self):
+        if isinstance(self.base_data_path, str):
+            self.base_data_path = Path(self.base_data_path)
+
 @dataclass
 class PhysicsConfig:
     """Configuration settings for the Physics Engine."""
@@ -93,6 +97,10 @@ class DeploymentConfig:
     feature_order_json_name: str = "bip_feature_order.json"
     scaler_json_name: str = "bip_scaler.json"
 
+    def __post_init__(self):
+        if isinstance(self.output_directory, str):
+            self.output_directory = Path(self.output_directory)
+
 @dataclass
 class LoggingConfig:
     """Configuration settings for logging."""
@@ -100,6 +108,10 @@ class LoggingConfig:
     file_path: Optional[Path] = None  # Path to log file, if None logs to console
     format: str = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
     date_format: str = "%Y-%m-%d %H:%M:%S"
+
+    def __post_init__(self):
+        if isinstance(self.file_path, str):
+            self.file_path = Path(self.file_path)
 
 class ConfigManager:
     """

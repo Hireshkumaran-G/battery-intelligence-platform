@@ -230,7 +230,7 @@ class PhysicsEngine:
         ecm_features["integrated_discharge_ah"] = float(discharge_ah)
         ecm_features["average_temperature_c"] = float(np.mean(temperature))
         ecm_features["temperature_range_c"] = float(np.ptp(temperature))
-        ecm_features["diffusion_time_constant_s"] = 10.0 + (np.random.rand() * 5.0)
+        ecm_features["diffusion_time_constant_s"] = 10.0
 
         return ecm_features
 
