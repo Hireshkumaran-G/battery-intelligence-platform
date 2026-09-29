@@ -19,16 +19,16 @@ def check_dashboard_setup():
         print(f"Warning: Dashboard directory not found at {DASHBOARD_DIR}")
         return False
     
-    node_modules = DASHBOARD_DIR / "node_modules"
-    if not node_modules.exists():
-        npm_cmd = shutil.which("npm")
+    vite_bin = DASHBOARD_DIR / "node_modules" / ".bin" / ("vite.cmd" if sys.platform == "win32" else "vite")
+    if not vite_bin.exists():
+        npm_cmd = shutil.which("npm") or shutil.which("npm.cmd")
         if not npm_cmd:
             print("Warning: 'npm' command not found. Please install Node.js (>=18) or use conda environment:")
             print("  conda env create -f environment.yml")
             print("  conda activate bip")
             return False
         print("Installing dashboard dependencies (npm install)...")
-        subprocess.run([npm_cmd, "install"], cwd=DASHBOARD_DIR, check=True)
+        subprocess.run([npm_cmd, "install"], cwd=DASHBOARD_DIR, check=True, shell=(sys.platform == "win32"))
     return True
 
 def main():
@@ -52,14 +52,14 @@ def main():
         processes.append(api_proc)
 
         if has_dashboard:
-            npm_cmd = shutil.which("npm")
-            if npm_cmd:
-                print("[2/2] Starting Vite Dashboard Frontend on http://localhost:5173 ...")
-                dashboard_proc = subprocess.Popen(
-                    [npm_cmd, "run", "dev"],
-                    cwd=DASHBOARD_DIR
-                )
-                processes.append(dashboard_proc)
+            npm_cmd = shutil.which("npm") or shutil.which("npm.cmd") or "npm"
+            print("[2/2] Starting Vite Dashboard Frontend on http://localhost:5173 ...")
+            dashboard_proc = subprocess.Popen(
+                [npm_cmd, "run", "dev"],
+                cwd=DASHBOARD_DIR,
+                shell=(sys.platform == "win32")
+            )
+            processes.append(dashboard_proc)
         
         print("\n" + "=" * 65)
         print("  System is live:")
